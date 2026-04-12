@@ -1,0 +1,9 @@
+Build a customer portal where enterprise clients can log in, view their invoices, 
+download usage reports, and open support tickets. 
+
+It needs to integrate with our existing Salesforce CRM and Stripe billing system. 
+The team is 2 frontend engineers, 1 backend engineer, and 1 designer. 
+We'd like to launch in Q2.
+
+Authentication should use SSO (SAML or OAuth). The portal needs to be white-labelable 
+for our top 3 enterprise customers. We haven't decided on a frontend framework yet.

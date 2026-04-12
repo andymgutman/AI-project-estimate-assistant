@@ -1,0 +1,368 @@
+{
+  "project_title": "Enterprise Customer Portal with Salesforce & Stripe Integration",
+  "summary": "A self-service portal for enterprise clients to manage invoices, download usage reports, and submit support tickets. Requires authenticated access with enterprise-grade security, bidirectional sync with Salesforce CRM for customer/ticket data, and Stripe integration for billing and invoice retrieval.",
+  "scope_breakdown": [
+    {
+      "epic": "Authentication & Authorization",
+      "stories": [
+        {
+          "title": "Enterprise SSO integration (SAML/OIDC)",
+          "size": "XL",
+          "notes": "Enterprise clients typically require SSO; expect multiple IdP configurations"
+        },
+        {
+          "title": "Fallback email/password auth with MFA",
+          "size": "L",
+          "notes": "Required for clients without SSO"
+        },
+        {
+          "title": "Role-based access control (admin vs. user)",
+          "size": "M",
+          "notes": "Enterprise accounts need multi-user support with permissions"
+        },
+        {
+          "title": "Session management & security hardening",
+          "size": "M",
+          "notes": "Token refresh, timeout policies, audit logging"
+        }
+      ]
+    },
+    {
+      "epic": "Invoice Management",
+      "stories": [
+        {
+          "title": "Stripe integration - fetch invoices by customer",
+          "size": "L",
+          "notes": "Stripe API pagination, handling multiple subscriptions"
+        },
+        {
+          "title": "Invoice list view with filtering/search",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "Invoice detail view with line items",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "PDF invoice download",
+          "size": "S",
+          "notes": "Stripe provides hosted URLs, but may need custom branding"
+        },
+        {
+          "title": "Payment status sync & display",
+          "size": "M",
+          "notes": "Webhook handling for real-time status"
+        }
+      ]
+    },
+    {
+      "epic": "Usage Reports",
+      "stories": [
+        {
+          "title": "Define usage data model & source",
+          "size": "L",
+          "notes": "Unclear where usage data lives - major scope variable"
+        },
+        {
+          "title": "Usage aggregation service/ETL",
+          "size": "XL",
+          "notes": "If usage data needs transformation, this is significant backend work"
+        },
+        {
+          "title": "Report generation (CSV/PDF export)",
+          "size": "L",
+          "notes": ""
+        },
+        {
+          "title": "Usage dashboard with date range filtering",
+          "size": "L",
+          "notes": ""
+        },
+        {
+          "title": "Scheduled report delivery (email)",
+          "size": "M",
+          "notes": "Nice-to-have but enterprise clients often expect this"
+        }
+      ]
+    },
+    {
+      "epic": "Support Tickets",
+      "stories": [
+        {
+          "title": "Salesforce Service Cloud integration - API setup",
+          "size": "L",
+          "notes": "OAuth, connected app configuration, field mapping"
+        },
+        {
+          "title": "Create ticket form with categorization",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "Ticket list view with status filters",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "Ticket detail view with comment thread",
+          "size": "L",
+          "notes": "Bidirectional sync of comments is complex"
+        },
+        {
+          "title": "File attachment support",
+          "size": "M",
+          "notes": "Storage and virus scanning considerations"
+        },
+        {
+          "title": "Real-time ticket status updates",
+          "size": "L",
+          "notes": "Salesforce webhooks or polling strategy needed"
+        }
+      ]
+    },
+    {
+      "epic": "Salesforce CRM Integration",
+      "stories": [
+        {
+          "title": "Customer data sync (account, contacts)",
+          "size": "L",
+          "notes": "Need to map portal users to SF contacts"
+        },
+        {
+          "title": "Sync conflict resolution strategy",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "Error handling & retry logic",
+          "size": "M",
+          "notes": "SF API rate limits and downtime handling"
+        }
+      ]
+    },
+    {
+      "epic": "Design & UX",
+      "stories": [
+        {
+          "title": "Design system/component library",
+          "size": "L",
+          "notes": "If not reusing existing system"
+        },
+        {
+          "title": "Responsive layouts (desktop/tablet/mobile)",
+          "size": "L",
+          "notes": ""
+        },
+        {
+          "title": "Accessibility compliance (WCAG 2.1 AA)",
+          "size": "L",
+          "notes": "Enterprise often requires this contractually"
+        },
+        {
+          "title": "Empty states, loading states, error states",
+          "size": "M",
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "epic": "Infrastructure & DevOps",
+      "stories": [
+        {
+          "title": "Environment setup (dev/staging/prod)",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "CI/CD pipeline",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "Monitoring & alerting",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "Security review & pen testing",
+          "size": "L",
+          "notes": "Enterprise customers will ask for SOC2, security questionnaires"
+        }
+      ]
+    },
+    {
+      "epic": "Testing & QA",
+      "stories": [
+        {
+          "title": "Unit test coverage (target 80%)",
+          "size": "L",
+          "notes": ""
+        },
+        {
+          "title": "Integration test suite for SF/Stripe",
+          "size": "L",
+          "notes": "Sandbox environments add friction"
+        },
+        {
+          "title": "E2E test automation",
+          "size": "L",
+          "notes": ""
+        },
+        {
+          "title": "UAT with pilot customers",
+          "size": "M",
+          "notes": "Calendar time, not effort"
+        }
+      ]
+    },
+    {
+      "epic": "Documentation & Launch",
+      "stories": [
+        {
+          "title": "User documentation/help center",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "Admin/internal runbook",
+          "size": "S",
+          "notes": ""
+        },
+        {
+          "title": "Customer onboarding flow",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "Launch communications & rollout plan",
+          "size": "S",
+          "notes": ""
+        }
+      ]
+    }
+  ],
+  "timeline": {
+    "optimistic_weeks": 14,
+    "realistic_weeks": 20,
+    "pessimistic_weeks": 28,
+    "assumptions": [
+      "SSO is required (enterprise standard) - adds 3-4 weeks vs. simple auth",
+      "Usage data source exists and is accessible via API - if not, add 4-6 weeks",
+      "Salesforce and Stripe sandbox environments are already configured",
+      "No major Salesforce customization required (standard objects)",
+      "Designer is dedicated to this project, not split across other work",
+      "Q2 means end of June (13 weeks from Jan 1, or ~18 weeks from mid-Feb)",
+      "No compliance requirements beyond standard security (no HIPAA, FedRAMP, etc.)"
+    ]
+  },
+  "resourcing": {
+    "roles": [
+      {
+        "role": "Frontend Engineer",
+        "fte": 2.0,
+        "notes": "Adequate for portal UI, may bottleneck during integration testing"
+      },
+      {
+        "role": "Backend Engineer",
+        "fte": 1.0,
+        "notes": "SEVERELY CONSTRAINED - Salesforce, Stripe, auth, usage reports all backend-heavy"
+      },
+      {
+        "role": "Designer",
+        "fte": 1.0,
+        "notes": "Adequate if no other projects; needs to front-load work"
+      },
+      {
+        "role": "QA Engineer",
+        "fte": 0.0,
+        "notes": "NOT ALLOCATED - who is testing integrations?"
+      },
+      {
+        "role": "DevOps/Platform Engineer",
+        "fte": 0.0,
+        "notes": "NOT ALLOCATED - who owns infra and security review?"
+      },
+      {
+        "role": "Product Manager",
+        "fte": 0.0,
+        "notes": "NOT ALLOCATED - who is making scope decisions and coordinating UAT?"
+      }
+    ],
+    "total_fte": 4.0,
+    "red_flags": [
+      "Single backend engineer is a critical-path bottleneck for a project with two major third-party integrations",
+      "No dedicated QA risks shipping bugs to enterprise customers who have low tolerance for issues",
+      "No PM/TPM allocated - scope creep and coordination overhead will fall on engineers",
+      "If backend engineer is unavailable (PTO, sick, attrition), project stops completely"
+    ]
+  },
+  "risks": [
+    {
+      "risk": "Salesforce integration complexity - custom objects, validation rules, or triggers in your SF org can break assumptions and require rework",
+      "likelihood": "High",
+      "impact": "High",
+      "mitigation": "Conduct SF schema review in week 1; get SF admin involved; build integration spike before committing to timeline"
+    },
+    {
+      "risk": "Stripe multi-entity complexity - if customers span multiple Stripe accounts or have complex subscription structures, invoice retrieval becomes significantly harder",
+      "likelihood": "Medium",
+      "impact": "Medium",
+      "mitigation": "Audit Stripe data model upfront; confirm 1:1 customer-to-Stripe mapping"
+    },
+    {
+      "risk": "SSO configuration delays - enterprise IdP setup (Okta, Azure AD, etc.) requires customer IT involvement and often takes 2-4 weeks per customer",
+      "likelihood": "High",
+      "impact": "Medium",
+      "mitigation": "Start SSO conversations with pilot customers immediately; have fallback auth ready for launch"
+    },
+    {
+      "risk": "Usage data source undefined - if usage data doesn't exist in a queryable format, this becomes a data engineering project",
+      "likelihood": "Medium",
+      "impact": "High",
+      "mitigation": "Clarify usage data source in week 1; if it requires ETL, consider descoping from v1"
+    },
+    {
+      "risk": "Backend engineer burnout or departure - single point of failure for all integration and API work",
+      "likelihood": "Medium",
+      "impact": "High",
+      "mitigation": "Add 0.5-1.0 FTE backend support; cross-train frontend engineers on backend basics"
+    },
+    {
+      "risk": "Enterprise security requirements emerge late - SOC2 questionnaires, pen test findings, or data residency requirements can force rework",
+      "likelihood": "Medium",
+      "impact": "High",
+      "mitigation": "Engage security team now; get ahead of customer security reviews; budget 2 weeks for remediation"
+    },
+    {
+      "risk": "Q2 deadline is not achievable with current scope and team",
+      "likelihood": "High",
+      "impact": "High",
+      "mitigation": "Either reduce scope (cut SSO, cut usage reports from v1) or add backend headcount immediately"
+    }
+  ],
+  "confidence": {
+    "level": "Low",
+    "rationale": "The brief has multiple undefined elements (usage data source, SSO requirements, Salesforce customization level) and the team is undersized for the integration complexity. Two major third-party integrations with a single backend engineer is a known failure pattern. Q2 launch is aggressive.",
+    "what_would_increase_confidence": [
+      "Confirm exact usage data source and access method",
+      "Audit Salesforce org for custom objects and existing integrations",
+      "Clarify SSO requirements - is enterprise SSO required for launch or a fast-follow?",
+      "Add at least 0.5 FTE backend support",
+      "Define MVP scope explicitly - what can be cut if timeline slips?",
+      "Confirm Q2 means June 30 vs. April 1 (massive difference)"
+    ]
+  },
+  "open_questions": [
+    "Where does usage data live today, and what format is it in?",
+    "Is enterprise SSO (SAML/OIDC) required for launch, or can we ship with email/password first?",
+    "How customized is your Salesforce org? Any managed packages, custom objects, or validation rules on Cases?",
+    "Do customers have one Stripe customer ID each, or are there multi-subscription/multi-account scenarios?",
+    "What does 'Q2' mean specifically - April 1, June 30, or something in between?",
+    "Are there existing security/compliance requirements (SOC2, GDPR, specific customer DPAs)?",
+    "Who is the product owner making scope tradeoff decisions?",
+    "Is there an existing design system to reuse, or starting from scratch?",
+    "Are there pilot customers identified for UAT, and are they already engaged?"
+  ]
+}

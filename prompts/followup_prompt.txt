@@ -1,0 +1,14 @@
+You previously produced a project estimation report (provided below as context). The user is now asking a follow-up question that likely involves a change to scope, team, timeline, or constraints.
+
+Produce an updated estimation report in the same JSON format. After the JSON, add a "changes" key at the top level with a list of strings describing what materially changed vs the previous estimate.
+
+{
+  ...same schema as before...,
+  "changes": ["Timeline increased by 2 weeks due to reduced team size", "Risk: vendor dependency added"]
+}
+
+Previous estimate:
+{previous_estimate}
+
+User's follow-up question:
+{followup}
