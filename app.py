@@ -33,7 +33,9 @@ DEV_MODE = st.session_state.dev_mode
 # ── Load data ─────────────────────────────────────────────────────────────────
 if DEV_MODE:
     with open(DEV_JSON) as f:
-        est = json.load(f)
+        data = json.load(f)
+    est = data
+    st.session_state.brief_text = data.get("_brief", "")
 else:
     if "estimate" not in st.session_state:
         st.title("📋 AI Project Estimator")
@@ -65,8 +67,9 @@ else:
             with st.spinner("Analyzing scope, surfacing risks, building estimate..."):
                 try:
                     result = estimate_project(brief)
-                    st.session_state.estimate = result
-                    st.session_state.changes  = []
+                    st.session_state.estimate   = result
+                    st.session_state.changes    = []
+                    st.session_state.brief_text = brief
                     st.rerun()
                 except Exception as e:
                     st.error(f"Estimation failed: {e}")
@@ -76,6 +79,7 @@ else:
 # ── Session state ─────────────────────────────────────────────────────────────
 if "changes"    not in st.session_state: st.session_state.changes    = []
 if "reest_open" not in st.session_state: st.session_state.reest_open = False
+if "brief_text" not in st.session_state: st.session_state.brief_text = ""
 
 # ── RAID classifier ───────────────────────────────────────────────────────────
 def classify_raid(story):
@@ -105,7 +109,7 @@ def classify_raid(story):
 def size_css(s):
     return {"S":"pill-S","M":"pill-M","L":"pill-L","XL":"pill-XL"}.get(s,"pill-M")
 
-def build_html(est):
+def build_html(est, brief_text=""):
     from collections import Counter
 
     tl   = est["timeline"]
@@ -113,6 +117,56 @@ def build_html(est):
     conf = est["confidence"]
     clvl = conf["level"]
     conf_color = {"Low":"#ef4444","Medium":"#f59e0b","High":"#22c55e"}.get(clvl,"#aaa")
+
+    # ── Brief preview panel ───────────────────────────────────────────────────
+    if brief_text.strip():
+        preview   = brief_text[:500]
+        truncated = len(brief_text) > 500
+        preview_escaped = preview.replace("&","&amp;").replace("<","&lt;").replace(">","&gt;")
+        if truncated:
+            preview_escaped += " …"
+        brief_panel = (
+            '<div class="res-toggle" onclick="toggleBrief()">'
+            '<span class="conf-label">Project brief</span>'
+            '<span class="conf-arrow" id="brief-arrow">▶</span>'
+            '</div>'
+            '<div class="res-panel" id="brief-panel">'
+            '<p style="font-size:13px;color:#666;line-height:1.6;white-space:pre-wrap;margin:6px 0 4px">'
+            + preview_escaped +
+            '</p></div>'
+        )
+    else:
+        brief_panel = ""
+
+    # ── Resourcing panel — must be built before metrics_html references it ────
+    role_rows = ""
+    for role in res.get("roles", []):
+        fte     = role.get("fte", 0)
+        notes   = role.get("notes", "")
+        is_warn = fte == 0 or any(k in notes.upper() for k in ["NOT ALLOCATED","SEVERELY","BOTTLENECK","SPOF","MISSING"])
+        nc  = "#f87171" if is_warn else "#bbb"
+        fc  = "#555"    if fte == 0 else "#e8e8e8"
+        noc = "#f87171" if is_warn else "#666"
+        role_rows += (
+            '<div class="res-row">'
+            '<span class="res-role" style="color:' + nc  + '">' + role.get("role","") + '</span>'
+            '<span class="res-fte"  style="color:' + fc  + '">' + str(fte) + ' FTE</span>'
+            '<span class="res-note" style="color:' + noc + '">' + notes + '</span>'
+            '</div>'
+        )
+    flag_rows = ""
+    for flag in res.get("red_flags", []):
+        flag_rows += '<div class="res-flag">⚠ ' + flag + '</div>'
+    flags_section = ('<div class="section-hdr" style="margin-top:10px">Red flags</div>' + flag_rows) if flag_rows else ""
+    resourcing_html = (
+        '<div class="res-toggle" onclick="toggleRes()">'
+        '<span class="conf-label">Resourcing detail</span>'
+        '<span class="conf-arrow" id="res-arrow">▶</span>'
+        '</div>'
+        '<div class="res-panel" id="res-panel">'
+        + role_rows + flags_section +
+        '</div>'
+    )
 
     ci_items = "".join(
         "<div class='conf-item'>→ " + f + "</div>"
@@ -125,16 +179,18 @@ def build_html(est):
         '<div class="summary-cell"><div class="lbl" style="color:#f87171">Pessimistic</div><div class="val">' + str(tl["pessimistic_weeks"]) + 'w</div></div>'
         '<div class="summary-cell"><div class="lbl" style="color:#d4b44a">Team size</div><div class="val">' + str(res["total_fte"]) + ' FTE</div></div>'
         '</div>'
-        '<div class="conf-row" onclick="toggleConf()">'
-        '<span class="conf-label">Confidence: <span style="color:' + conf_color + '">' + clvl + '</span></span>'
-        '<span class="conf-arrow" id="conf-arrow">▶</span>'
-        '</div>'
-        '<div class="conf-panel" id="conf-panel">'
-        '<p class="conf-rationale">' + conf["rationale"] + '</p>'
-        '<div class="section-hdr">To increase confidence</div>'
-        + ci_items +
-        '</div>'
-        '<hr class="divider">'
+        + brief_panel
+        + resourcing_html
+        + '<div class="conf-row" onclick="toggleConf()">'
+        + '<span class="conf-label">Confidence: <span style="color:' + conf_color + '">' + clvl + '</span></span>'
+        + '<span class="conf-arrow" id="conf-arrow">▶</span>'
+        + '</div>'
+        + '<div class="conf-panel" id="conf-panel">'
+        + '<p class="conf-rationale">' + conf["rationale"] + '</p>'
+        + '<div class="section-hdr">To increase confidence</div>'
+        + ci_items
+        + '</div>'
+        + '<hr class="divider">'
     )
 
     RAID_TYPES = ["R", "A", "I", "D"]
@@ -276,6 +332,15 @@ def build_html(est):
         ".detail-row:last-child { border-bottom:none; }"
         ".detail-text { font-size:14px; color:#999; line-height:1.5; }"
         ".desc-text { font-size:15px; color:#888; line-height:1.6; margin-bottom:2px; }"
+        ".res-panel { display:none; padding:6px 0 10px 0; }"
+        ".res-row { display:grid; grid-template-columns:200px 80px 1fr; gap:10px; padding:7px 0; border-bottom:1px solid #141414; align-items:baseline; }"
+        ".res-role { font-size:14px; font-weight:500; }"
+        ".res-fte  { font-family:\"IBM Plex Mono\",monospace; font-size:13px; font-weight:600; text-align:right; }"
+        ".res-note { font-size:13px; color:#666; line-height:1.4; }"
+        ".res-flag { font-size:13px; color:#f59e0b; padding:5px 0 4px; border-bottom:1px solid #1a1a1a; }"
+        ".res-flag:last-child { border-bottom:none; }"
+        ".res-toggle { display:flex; align-items:center; gap:8px; cursor:pointer; padding:8px 0 6px; border-top:1px solid #1e1e1e; margin-top:4px; user-select:none; }"
+        ".res-toggle:hover .conf-label { color:#fff; }"
     )
 
     js = (
@@ -299,6 +364,20 @@ def build_html(est):
         "var o=d.style.display==='block';"
         "d.style.display=o?'none':'block';"
         "if(c)c.classList.toggle('open',!o);}"
+        "function toggleRes(){"
+        "var p=document.getElementById('res-panel');"
+        "var a=document.getElementById('res-arrow');"
+        "var o=p.style.display==='block';"
+        "p.style.display=o?'none':'block';"
+        "a.style.transform=o?'':' rotate(90deg)';"
+        "a.textContent=o?'▶':'▼';}"
+        "function toggleBrief(){"
+        "var p=document.getElementById('brief-panel');"
+        "var a=document.getElementById('brief-arrow');"
+        "var o=p.style.display==='block';"
+        "p.style.display=o?'none':'block';"
+        "a.style.transform=o?'':' rotate(90deg)';"
+        "a.textContent=o?'▶':'▼';}"
     )
 
     reestimate_html = (
@@ -334,7 +413,7 @@ def build_html(est):
         '</body></html>'
     )
 
-html_content = build_html(est)
+html_content = build_html(est, st.session_state.brief_text)
 
 # ── Render title + summary outside component ──────────────────────────────────
 st.markdown(f"## {est['project_title']}")

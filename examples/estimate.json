@@ -1,4 +1,5 @@
 {
+  "_brief": "Build a customer portal where enterprise clients can log in, view their invoices, download usage reports, and open support tickets. It needs to integrate with our existing Salesforce CRM and Stripe billing system. The team is 2 frontend engineers, 1 backend engineer, and 1 designer. We'd like to launch in Q2.",
   "project_title": "Enterprise Customer Portal with Salesforce & Stripe Integration",
   "summary": "A self-service portal for enterprise clients to manage invoices, download usage reports, and submit support tickets. Requires authenticated access with enterprise-grade security, bidirectional sync with Salesforce CRM for customer/ticket data, and Stripe integration for billing and invoice retrieval.",
   "scope_breakdown": [
