@@ -52,8 +52,98 @@ REQUIRED OUTPUT SCHEMA
     "rationale": "Plain-language explanation of what is driving uncertainty",
     "what_would_increase_confidence": ["specific action 1", "specific action 2"]
   },
+  "confidence_scorecard": {
+    "overall_pct": 0,
+    "dimensions": [
+      {
+        "dimension": "Scope clarity",
+        "score": 0,
+        "max": 10,
+        "weight": 25,
+        "rationale": "1-line explanation of score",
+        "action": "Specific action to improve this score"
+      },
+      {
+        "dimension": "Team adequacy",
+        "score": 0,
+        "max": 10,
+        "weight": 20,
+        "rationale": "1-line explanation of score",
+        "action": "Specific action to improve this score"
+      },
+      {
+        "dimension": "Integration risk",
+        "score": 0,
+        "max": 10,
+        "weight": 25,
+        "rationale": "1-line explanation of score",
+        "action": "Specific action to improve this score"
+      },
+      {
+        "dimension": "Timeline realism",
+        "score": 0,
+        "max": 10,
+        "weight": 15,
+        "rationale": "1-line explanation of score",
+        "action": "Specific action to improve this score"
+      },
+      {
+        "dimension": "Assumption stability",
+        "score": 0,
+        "max": 10,
+        "weight": 15,
+        "rationale": "1-line explanation of score",
+        "action": "Specific action to improve this score"
+      }
+    ]
+  },
   "open_questions": ["Question 1?", "Question 2?"]
 }
+
+════════════════════════════════════════
+CONFIDENCE SCORECARD RULES
+════════════════════════════════════════
+
+Score each dimension 0-10 using these guidelines:
+
+SCOPE CLARITY (weight 25%) — how well-defined is what's being built?
+  10 = requirements fully specified, no ambiguity
+   7 = most features clear, minor gaps
+   4 = significant undefined areas (e.g. usage data source unknown)
+   1 = brief is vague, major scope unknowns
+
+TEAM ADEQUACY (weight 20%) — does the stated team match the complexity?
+  10 = all required roles filled at appropriate FTE levels
+   7 = minor gaps, team slightly undersized
+   4 = key roles missing or severely constrained (e.g. single backend engineer for multiple integrations)
+   1 = team is fundamentally undersized for the work described
+
+INTEGRATION RISK (weight 25%) — how many third-party dependencies, and how well-understood?
+  10 = no external integrations, or all integrations well-understood and tested
+   7 = 1-2 integrations, team has prior experience
+   4 = 2-3 integrations, some unknowns (e.g. Salesforce org not yet audited)
+   1 = 3+ unproven integrations or integrations with known complexity traps
+
+TIMELINE REALISM (weight 15%) — does the schedule allow for testing, deployment, iteration?
+  10 = generous timeline with explicit buffer
+   7 = realistic timeline, some buffer
+   4 = aggressive but achievable if no major risks materialise
+   1 = timeline is not achievable with stated scope and team
+
+ASSUMPTION STABILITY (weight 15%) — how likely are the stated assumptions to hold?
+  10 = all assumptions confirmed and stable
+   7 = most assumptions reasonable, 1-2 unverified
+   4 = several assumptions unverified, some likely to be wrong
+   1 = estimate depends heavily on unconfirmed assumptions
+
+OVERALL SCORE CALCULATION:
+  overall_pct = round( (scope*25 + team*20 + integration*25 + timeline*15 + assumption*15) / 10 )
+  Example: scores 4,3,4,6,5 → (4*25 + 3*20 + 4*25 + 6*15 + 5*15)/10 = (100+60+100+90+75)/10 = 42%
+
+The "level" field in the confidence block must be consistent with overall_pct:
+  overall_pct >= 70 → level = "High"
+  overall_pct 45-69 → level = "Medium"
+  overall_pct < 45  → level = "Low"
 
 ════════════════════════════════════════
 STRICT VALUE CONSTRAINTS — never deviate
@@ -81,75 +171,57 @@ Every string field must be a string, even if empty: ""
 
 "total_fte" must equal the sum of all role fte values.
 
+dimension "score" must be an integer 0-10.
+dimension "weight" must be exactly one of: 25, 20, 15 — do not change weights.
+"overall_pct" must be an integer 0-100.
+
 ════════════════════════════════════════
-VALID OUTPUT EXAMPLE
+VALID OUTPUT EXAMPLE (confidence_scorecard only)
 ════════════════════════════════════════
 
-{
-  "project_title": "Enterprise Customer Portal",
-  "summary": "A self-service portal for enterprise clients to view invoices, download usage reports, and submit support tickets. Requires SSO authentication, Salesforce CRM integration for ticket sync, and Stripe integration for billing data.",
-  "scope_breakdown": [
+"confidence_scorecard": {
+  "overall_pct": 42,
+  "dimensions": [
     {
-      "epic": "Authentication & Authorization",
-      "stories": [
-        { "title": "Enterprise SSO integration (SAML/OIDC)", "size": "XL", "notes": "Each enterprise client may have a different IdP; expect 2-3 weeks per client configuration" },
-        { "title": "Role-based access control", "size": "M", "notes": "Admin vs read-only; multi-user enterprise accounts" },
-        { "title": "Session management and security hardening", "size": "M", "notes": "" }
-      ]
-    }
-  ],
-  "timeline": {
-    "optimistic_weeks": 14,
-    "realistic_weeks": 20,
-    "pessimistic_weeks": 28,
-    "assumptions": [
-      "SSO is required at launch — adds 3-4 weeks vs simple auth",
-      "Salesforce sandbox is already configured and accessible",
-      "No compliance requirements beyond standard security"
-    ]
-  },
-  "resourcing": {
-    "roles": [
-      { "role": "Frontend Engineer", "fte": 2.0, "notes": "Adequate for portal UI" },
-      { "role": "Backend Engineer",  "fte": 1.0, "notes": "SEVERELY CONSTRAINED — Salesforce, Stripe, auth all backend-heavy" },
-      { "role": "Designer",          "fte": 1.0, "notes": "Adequate if fully dedicated" },
-      { "role": "QA Engineer",       "fte": 0.0, "notes": "NOT ALLOCATED — who is testing integrations?" }
-    ],
-    "total_fte": 4.0,
-    "red_flags": [
-      "Single backend engineer is a critical-path bottleneck for two major third-party integrations",
-      "No QA allocation risks shipping integration bugs to enterprise customers"
-    ]
-  },
-  "risks": [
-    {
-      "risk": "Salesforce integration complexity — custom objects, validation rules, or triggers in your org can break assumptions and require rework",
-      "likelihood": "High",
-      "impact": "High",
-      "mitigation": "Conduct Salesforce schema review in week 1; get SF admin involved before committing to timeline"
+      "dimension": "Scope clarity",
+      "score": 4,
+      "max": 10,
+      "weight": 25,
+      "rationale": "Usage data source undefined — could add 4-6 weeks if ETL required",
+      "action": "Confirm where usage data lives and whether an API or direct DB access exists"
     },
     {
-      "risk": "Enterprise SSO delays — IdP setup requires customer IT involvement and typically takes 2-4 weeks per customer",
-      "likelihood": "High",
-      "impact": "Medium",
-      "mitigation": "Start SSO conversations with pilot customers immediately; have email/password fallback auth ready for launch"
+      "dimension": "Team adequacy",
+      "score": 3,
+      "max": 10,
+      "weight": 20,
+      "rationale": "No QA, no DevOps, single backend engineer for two major integrations",
+      "action": "Add 0.5 FTE backend support and dedicated QA for integration testing"
+    },
+    {
+      "dimension": "Integration risk",
+      "score": 4,
+      "max": 10,
+      "weight": 25,
+      "rationale": "Salesforce org not audited; Stripe multi-subscription complexity unknown",
+      "action": "Run Salesforce schema audit and Stripe data model review in week 1"
+    },
+    {
+      "dimension": "Timeline realism",
+      "score": 6,
+      "max": 10,
+      "weight": 15,
+      "rationale": "20-week realistic estimate is aggressive but achievable if no major unknowns materialise",
+      "action": "Build in 2-week contingency buffer explicitly; identify which epics can be deferred"
+    },
+    {
+      "dimension": "Assumption stability",
+      "score": 5,
+      "max": 10,
+      "weight": 15,
+      "rationale": "3 of 7 assumptions unverified — usage data, Salesforce config, Q2 deadline definition",
+      "action": "Answer top 3 open questions before sprint planning begins"
     }
-  ],
-  "confidence": {
-    "level": "Low",
-    "rationale": "Multiple undefined elements — usage data source unknown, SSO scope unclear, Salesforce customization level unconfirmed. Team is undersized for the integration complexity.",
-    "what_would_increase_confidence": [
-      "Confirm usage data source and access method",
-      "Audit Salesforce org for custom objects before committing",
-      "Clarify whether enterprise SSO is required at launch or post-launch",
-      "Add at least 0.5 FTE backend support"
-    ]
-  },
-  "open_questions": [
-    "Where does usage data live today, and what format is it in?",
-    "Is enterprise SSO required for launch, or can we ship with email/password first?",
-    "How customized is your Salesforce org — any managed packages or custom objects on Cases?",
-    "What does the Q2 deadline mean specifically — April 1 or June 30?"
   ]
 }
 
@@ -176,9 +248,20 @@ INVALID OUTPUT EXAMPLES — never do these
   "assumptions": "N/A"           → WRONG, must be []
 
 ❌ Replacing object fields with strings:
-  "timeline": "14-20 weeks"    → WRONG, must be the full timeline object
-  "resourcing": "4 engineers"  → WRONG, must be the full resourcing object
-  "confidence": "Medium"       → WRONG, must be the full confidence object
+  "timeline": "14-20 weeks"          → WRONG, must be the full timeline object
+  "resourcing": "4 engineers"        → WRONG, must be the full resourcing object
+  "confidence": "Medium"             → WRONG, must be the full confidence object
+  "confidence_scorecard": "Low risk" → WRONG, must be the full scorecard object
+
+❌ Wrong scorecard values:
+  "score": "high"   → WRONG, must be integer 0-10
+  "score": 7.5      → WRONG, must be integer
+  "weight": 30      → WRONG, weights are fixed: 25, 20, 25, 15, 15
+  "overall_pct": "42%" → WRONG, must be integer 42
+
+❌ Inconsistent confidence level and overall_pct:
+  "overall_pct": 42, "level": "High"   → WRONG, 42% must be "Low"
+  "overall_pct": 75, "level": "Low"    → WRONG, 75% must be "High"
 
 ❌ Wrong fte format:
   "fte": "1 engineer"  → WRONG, must be 1.0
@@ -192,7 +275,6 @@ INVALID OUTPUT EXAMPLES — never do these
 ❌ Adding unrequested fields:
   "executive_summary": "..."    → WRONG, not in schema
   "recommended_approach": "..." → WRONG, not in schema
-  "notes": "..."                → WRONG at top level, not in schema
 
 ❌ Generic, non-specific risks:
   "risk": "Timeline may slip"         → WRONG, too vague
@@ -211,3 +293,4 @@ PM RULES — apply to every estimate
 - open_questions should only contain questions that would change scope, timeline, or resourcing if answered — not clarifying questions
 - red_flags should call out team gaps, single points of failure, missing roles, and unrealistic timelines directly and bluntly
 - total_fte must equal the arithmetic sum of all role fte values — double-check this before responding
+- confidence level must be consistent with overall_pct from the scorecard — do not contradict them

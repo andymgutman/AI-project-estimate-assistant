@@ -365,5 +365,50 @@
     "Who is the product owner making scope tradeoff decisions?",
     "Is there an existing design system to reuse, or starting from scratch?",
     "Are there pilot customers identified for UAT, and are they already engaged?"
-  ]
+  ],
+  "confidence_scorecard": {
+    "overall_pct": 42,
+    "dimensions": [
+      {
+        "dimension": "Scope clarity",
+        "score": 4,
+        "max": 10,
+        "weight": 25,
+        "rationale": "Usage data source undefined \u2014 could add 4-6 weeks if ETL required",
+        "action": "Confirm where usage data lives and whether API or direct DB access exists"
+      },
+      {
+        "dimension": "Team adequacy",
+        "score": 3,
+        "max": 10,
+        "weight": 20,
+        "rationale": "No QA, no DevOps, single backend engineer for two major integrations",
+        "action": "Add 0.5 FTE backend support and dedicated QA for integration testing"
+      },
+      {
+        "dimension": "Integration risk",
+        "score": 4,
+        "max": 10,
+        "weight": 25,
+        "rationale": "Salesforce org not audited; Stripe multi-subscription complexity unknown",
+        "action": "Run Salesforce schema audit and Stripe data model review in week 1"
+      },
+      {
+        "dimension": "Timeline realism",
+        "score": 6,
+        "max": 10,
+        "weight": 15,
+        "rationale": "20-week realistic estimate is aggressive but achievable if no unknowns materialise",
+        "action": "Build in 2-week contingency buffer; identify which epics can be deferred to v2"
+      },
+      {
+        "dimension": "Assumption stability",
+        "score": 5,
+        "max": 10,
+        "weight": 15,
+        "rationale": "3 of 7 assumptions unverified \u2014 usage data, Salesforce config, Q2 deadline definition",
+        "action": "Answer top 3 open questions before sprint planning begins"
+      }
+    ]
+  }
 }

@@ -124,6 +124,30 @@ def auto_correct(data: dict) -> dict:
     if not isinstance(conf.get("what_would_increase_confidence"), list):
         conf["what_would_increase_confidence"] = []
 
+    # Scorecard — recalculate overall_pct and enforce level consistency
+    sc = data.get("confidence_scorecard")
+    if sc and isinstance(sc.get("dimensions"), list) and len(sc["dimensions"]) == 5:
+        weights = [25, 20, 25, 15, 15]
+        scores  = []
+        for i, dim in enumerate(sc["dimensions"]):
+            s = dim.get("score", 5)
+            if not isinstance(s, int): s = 5
+            s = max(0, min(10, s))
+            dim["score"]  = s
+            dim["max"]    = 10
+            dim["weight"] = weights[i]
+            scores.append(s)
+        calculated_pct = round(sum(s * w for s, w in zip(scores, weights)) / 10)
+        if sc.get("overall_pct") != calculated_pct:
+            logger.warning(f"Recalculated overall_pct: {sc.get('overall_pct')} → {calculated_pct}")
+            sc["overall_pct"] = calculated_pct
+        expected_level = "High" if calculated_pct >= 70 else ("Medium" if calculated_pct >= 45 else "Low")
+        if conf.get("level") != expected_level:
+            logger.warning(f"Corrected confidence level: {conf.get('level')} → {expected_level}")
+            conf["level"] = expected_level
+    elif not sc:
+        data["confidence_scorecard"] = {"overall_pct": 0, "dimensions": []}
+
     # Open questions
     if not isinstance(data.get("open_questions"), list):
         data["open_questions"] = []
@@ -184,6 +208,25 @@ def validate_estimate(data: dict) -> list[str]:
     conf = data.get("confidence", {})
     if conf.get("level") not in VALID_HML:
         errors.append(f"confidence.level: invalid value '{conf.get('level')}'")
+
+    # Scorecard
+    sc = data.get("confidence_scorecard", {})
+    if not sc:
+        errors.append("Missing confidence_scorecard")
+    else:
+        pct = sc.get("overall_pct")
+        if not isinstance(pct, int) or not (0 <= pct <= 100):
+            errors.append(f"confidence_scorecard.overall_pct must be int 0-100, got '{pct}'")
+        expected_weights = [25, 20, 25, 15, 15]
+        dims = sc.get("dimensions", [])
+        if len(dims) != 5:
+            errors.append(f"confidence_scorecard must have 5 dimensions, got {len(dims)}")
+        for di, dim in enumerate(dims):
+            s = dim.get("score")
+            if not isinstance(s, int) or not (0 <= s <= 10):
+                errors.append(f"scorecard dim {di} score must be int 0-10, got '{s}'")
+            if di < len(expected_weights) and dim.get("weight") != expected_weights[di]:
+                errors.append(f"scorecard dim {di} weight should be {expected_weights[di]}, got '{dim.get('weight')}'")
 
     return errors
 

@@ -172,6 +172,32 @@ def build_html(est, brief_text=""):
         "<div class='conf-item'>→ " + f + "</div>"
         for f in conf["what_would_increase_confidence"]
     )
+
+    # Scorecard visualization
+    sc = est.get("confidence_scorecard", {})
+    sc_pct = sc.get("overall_pct", 0)
+    pct_color = "#ef4444" if sc_pct < 45 else ("#f59e0b" if sc_pct < 70 else "#22c55e")
+    bar_html = ""
+    for dim in sc.get("dimensions", []):
+        score   = dim.get("score", 0)
+        pct_w   = score * 10
+        d_color = "#ef4444" if score <= 3 else ("#f59e0b" if score <= 6 else "#22c55e")
+        bar_html += (
+            '<div class="sc-row">'
+            '<span class="sc-dim">' + dim.get("dimension","") + '</span>'
+            '<div class="sc-bar-wrap"><div class="sc-bar" style="width:' + str(pct_w) + '%;background:' + d_color + '"></div></div>'
+            '<span class="sc-score" style="color:' + d_color + '">' + str(score) + '/10</span>'
+            '</div>'
+            '<div class="sc-detail"><span class="sc-note">' + dim.get("rationale","") + '</span>'
+            '<span class="sc-action">→ ' + dim.get("action","") + '</span></div>'
+        )
+    sc_pct_badge = (' <span style="color:' + pct_color + ';font-family:IBM Plex Mono,monospace;font-size:13px">(' + str(sc_pct) + '%)</span>') if sc_pct else ""
+    scorecard_html = (
+        '<div class="sc-header"><span class="sc-pct" style="color:' + pct_color + '">' + str(sc_pct) + '%</span>'
+        '<span class="sc-pct-label"> overall confidence</span></div>'
+        + bar_html
+    ) if bar_html else ""
+
     metrics_html = (
         '<div class="summary-bar">'
         '<div class="summary-cell"><div class="lbl" style="color:#60a5fa">Optimistic</div><div class="val">' + str(tl["optimistic_weeks"]) + 'w</div></div>'
@@ -182,12 +208,13 @@ def build_html(est, brief_text=""):
         + brief_panel
         + resourcing_html
         + '<div class="conf-row" onclick="toggleConf()">'
-        + '<span class="conf-label">Confidence: <span style="color:' + conf_color + '">' + clvl + '</span></span>'
+        + '<span class="conf-label">Confidence: <span style="color:' + conf_color + '">' + clvl + '</span>' + sc_pct_badge + '</span>'
         + '<span class="conf-arrow" id="conf-arrow">▶</span>'
         + '</div>'
         + '<div class="conf-panel" id="conf-panel">'
         + '<p class="conf-rationale">' + conf["rationale"] + '</p>'
-        + '<div class="section-hdr">To increase confidence</div>'
+        + scorecard_html
+        + '<div class="section-hdr" style="margin-top:14px">To increase confidence</div>'
         + ci_items
         + '</div>'
         + '<hr class="divider">'
@@ -341,6 +368,18 @@ def build_html(est, brief_text=""):
         ".res-flag:last-child { border-bottom:none; }"
         ".res-toggle { display:flex; align-items:center; gap:8px; cursor:pointer; padding:8px 0 6px; border-top:1px solid #1e1e1e; margin-top:4px; user-select:none; }"
         ".res-toggle:hover .conf-label { color:#fff; }"
+        ".sc-header { display:flex; align-items:baseline; gap:6px; margin:10px 0 12px; }"
+        ".sc-pct { font-family:\"IBM Plex Mono\",monospace; font-size:28px; font-weight:700; }"
+        ".sc-pct-label { font-size:13px; color:#555; }"
+        ".sc-row { display:grid; grid-template-columns:160px 1fr 52px; align-items:center; gap:10px; margin-top:10px; }"
+        ".sc-dim { font-size:13px; color:#aaa; font-weight:500; }"
+        ".sc-bar-wrap { height:6px; background:#1a1a1a; border-radius:3px; overflow:hidden; }"
+        ".sc-bar { height:100%; border-radius:3px; }"
+        ".sc-score { font-family:\"IBM Plex Mono\",monospace; font-size:12px; font-weight:600; text-align:right; }"
+        ".sc-detail { display:flex; flex-direction:column; gap:2px; padding:3px 0 8px; margin-left:170px; border-bottom:1px solid #141414; }"
+        ".sc-note { font-size:12px; color:#555; line-height:1.4; }"
+        ".sc-action { font-size:12px; color:#3a6a3a; }"
+        ".sc-detail:last-child { border-bottom:none; }"
     )
 
     js = (
