@@ -1,414 +1,663 @@
 {
-  "_brief": "Build a customer portal where enterprise clients can log in, view their invoices, download usage reports, and open support tickets. It needs to integrate with our existing Salesforce CRM and Stripe billing system. The team is 2 frontend engineers, 1 backend engineer, and 1 designer. We'd like to launch in Q2.",
-  "project_title": "Enterprise Customer Portal with Salesforce & Stripe Integration",
-  "summary": "A self-service portal for enterprise clients to manage invoices, download usage reports, and submit support tickets. Requires authenticated access with enterprise-grade security, bidirectional sync with Salesforce CRM for customer/ticket data, and Stripe integration for billing and invoice retrieval.",
+  "_brief": "A web platform for high school students to manage and collaborate on school clubs. It centralizes member management, communication, event planning, and resources. Audience: students (13–18), club leaders, and faculty advisors. Objectives: streamline club operations, improve engagement and transparency, reduce administrative overhead, and provide compliant, secure access. ",
+  "project_title": "ClubHub: High School Club Management Platform",
+  "summary": "A multi-tenant web platform for high school students, club leaders, and faculty advisors to manage club operations including member management, event planning, task coordination, budgets, and communication. The platform requires school SSO integration, FERPA/COPPA compliance, and integrations with Google/Microsoft ecosystems.",
   "scope_breakdown": [
+    {
+      "epic": "Discovery & Foundation",
+      "stories": [
+        {
+          "title": "Stakeholder interviews (students, advisors, admins)",
+          "size": "M",
+          "notes": "Need access to actual high school stakeholders for validation"
+        },
+        {
+          "title": "Information architecture and user flows",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "Technical architecture design (multi-tenant, auth, integrations)",
+          "size": "L",
+          "notes": "Multi-tenant design decisions will cascade to all features"
+        },
+        {
+          "title": "FERPA/COPPA compliance review with legal",
+          "size": "M",
+          "notes": "External legal review required; may surface blocking requirements"
+        },
+        {
+          "title": "Design system and component library setup",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "Infrastructure setup (CI/CD, environments, monitoring)",
+          "size": "L",
+          "notes": ""
+        }
+      ]
+    },
     {
       "epic": "Authentication & Authorization",
       "stories": [
         {
-          "title": "Enterprise SSO integration (SAML/OIDC)",
+          "title": "Google Workspace SSO integration",
+          "size": "L",
+          "notes": "Each school's Google Workspace config varies; expect debugging"
+        },
+        {
+          "title": "Microsoft AAD SSO integration",
+          "size": "L",
+          "notes": "AAD tenant configurations are notoriously inconsistent"
+        },
+        {
+          "title": "Email invite fallback auth flow",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "MFA implementation for leaders/admins",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "Role-based access control system",
+          "size": "L",
+          "notes": "Four user types \u00d7 club-level permissions \u00d7 custom permissions = complex matrix"
+        },
+        {
+          "title": "Session management and security hardening",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "Audit logging infrastructure",
+          "size": "M",
+          "notes": "Required for FERPA compliance"
+        }
+      ]
+    },
+    {
+      "epic": "Multi-Tenant Core",
+      "stories": [
+        {
+          "title": "School onboarding and tenant provisioning",
+          "size": "L",
+          "notes": ""
+        },
+        {
+          "title": "School admin dashboard",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "Policy configuration per school",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "Data isolation and tenant security",
+          "size": "L",
+          "notes": "Critical for compliance; must be bulletproof"
+        },
+        {
+          "title": "Backup and retention policy implementation",
+          "size": "M",
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "epic": "Club Management Core",
+      "stories": [
+        {
+          "title": "Club creation and configuration",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "Club home page with announcements",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "Pinned resources management",
+          "size": "S",
+          "notes": ""
+        },
+        {
+          "title": "Join request workflow with eligibility checks",
+          "size": "L",
+          "notes": "Grade limits require student data from SSO or manual entry"
+        },
+        {
+          "title": "Role assignment and custom permissions per club",
+          "size": "L",
+          "notes": ""
+        },
+        {
+          "title": "Roster management with contact preferences",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "Bulk import/export (CSV)",
+          "size": "M",
+          "notes": "Data validation and error handling often underestimated"
+        },
+        {
+          "title": "Attendance tracking system",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "Points/badges gamification system",
+          "size": "L",
+          "notes": "Scope creep risk; needs clear rules definition"
+        }
+      ]
+    },
+    {
+      "epic": "Communication & Collaboration",
+      "stories": [
+        {
+          "title": "Discussion threads with @mentions",
+          "size": "L",
+          "notes": "Real-time updates add complexity"
+        },
+        {
+          "title": "Reactions system",
+          "size": "S",
+          "notes": ""
+        },
+        {
+          "title": "Advisor moderation tools",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "Notification system (in-app)",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "Push notification infrastructure",
+          "size": "L",
+          "notes": "PWA push notifications have browser-specific quirks"
+        },
+        {
+          "title": "Email notification service",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "Polls/voting with quorum and timebox",
+          "size": "L",
+          "notes": "Edge cases: ties, late votes, quorum changes mid-poll"
+        }
+      ]
+    },
+    {
+      "epic": "Document & File Management",
+      "stories": [
+        {
+          "title": "File upload and object storage integration",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "Google Drive integration",
+          "size": "L",
+          "notes": "OAuth scopes and school admin consent flows are complex"
+        },
+        {
+          "title": "Microsoft OneDrive integration",
+          "size": "L",
+          "notes": "Graph API permissions model differs from Google"
+        },
+        {
+          "title": "File preview and sharing permissions",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "Search indexing for documents",
+          "size": "L",
+          "notes": "Full-text search across files requires dedicated infrastructure"
+        }
+      ]
+    },
+    {
+      "epic": "Events & Calendar",
+      "stories": [
+        {
+          "title": "Event creation with RSVP, capacity, waitlists",
+          "size": "L",
+          "notes": "Waitlist promotion logic needs careful design"
+        },
+        {
+          "title": "Club calendar views",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "School-wide calendar aggregation",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "iCal export",
+          "size": "S",
+          "notes": ""
+        },
+        {
+          "title": "Google Calendar sync",
+          "size": "L",
+          "notes": "Two-way sync is significantly harder than one-way"
+        },
+        {
+          "title": "Microsoft Calendar sync",
+          "size": "L",
+          "notes": ""
+        },
+        {
+          "title": "Event reminders and notifications",
+          "size": "M",
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "epic": "Task Management",
+      "stories": [
+        {
+          "title": "Kanban task board",
+          "size": "L",
+          "notes": "Drag-and-drop, real-time updates"
+        },
+        {
+          "title": "Task assignments and due dates",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "Task dependencies",
+          "size": "L",
+          "notes": "Dependency graphs and blocking logic add significant complexity"
+        },
+        {
+          "title": "Task reminders",
+          "size": "S",
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "epic": "Budget & Finance",
+      "stories": [
+        {
+          "title": "Budget request workflow",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "Approval chain (leader \u2192 advisor)",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "Expense logging",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "Receipt upload and attachment",
+          "size": "S",
+          "notes": ""
+        },
+        {
+          "title": "Budget reports and exports",
+          "size": "M",
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "epic": "Reporting & Analytics",
+      "stories": [
+        {
+          "title": "Advisor reports dashboard",
+          "size": "L",
+          "notes": ""
+        },
+        {
+          "title": "School admin analytics",
+          "size": "L",
+          "notes": ""
+        },
+        {
+          "title": "Data export for school admins",
+          "size": "M",
+          "notes": "FERPA requires specific data handling"
+        },
+        {
+          "title": "Success metrics tracking implementation",
+          "size": "L",
+          "notes": "Adoption, engagement, efficiency metrics require instrumentation"
+        }
+      ]
+    },
+    {
+      "epic": "Accessibility & UX Polish",
+      "stories": [
+        {
+          "title": "WCAG 2.1 AA audit and remediation",
           "size": "XL",
-          "notes": "Enterprise clients typically require SSO; expect multiple IdP configurations"
+          "notes": "Accessibility across all features; often 20-30% of UI effort"
         },
         {
-          "title": "Fallback email/password auth with MFA",
-          "size": "L",
-          "notes": "Required for clients without SSO"
-        },
-        {
-          "title": "Role-based access control (admin vs. user)",
-          "size": "M",
-          "notes": "Enterprise accounts need multi-user support with permissions"
-        },
-        {
-          "title": "Session management & security hardening",
-          "size": "M",
-          "notes": "Token refresh, timeout policies, audit logging"
-        }
-      ]
-    },
-    {
-      "epic": "Invoice Management",
-      "stories": [
-        {
-          "title": "Stripe integration - fetch invoices by customer",
-          "size": "L",
-          "notes": "Stripe API pagination, handling multiple subscriptions"
-        },
-        {
-          "title": "Invoice list view with filtering/search",
-          "size": "M",
-          "notes": ""
-        },
-        {
-          "title": "Invoice detail view with line items",
-          "size": "M",
-          "notes": ""
-        },
-        {
-          "title": "PDF invoice download",
-          "size": "S",
-          "notes": "Stripe provides hosted URLs, but may need custom branding"
-        },
-        {
-          "title": "Payment status sync & display",
-          "size": "M",
-          "notes": "Webhook handling for real-time status"
-        }
-      ]
-    },
-    {
-      "epic": "Usage Reports",
-      "stories": [
-        {
-          "title": "Define usage data model & source",
-          "size": "L",
-          "notes": "Unclear where usage data lives - major scope variable"
-        },
-        {
-          "title": "Usage aggregation service/ETL",
-          "size": "XL",
-          "notes": "If usage data needs transformation, this is significant backend work"
-        },
-        {
-          "title": "Report generation (CSV/PDF export)",
+          "title": "Keyboard navigation implementation",
           "size": "L",
           "notes": ""
         },
         {
-          "title": "Usage dashboard with date range filtering",
-          "size": "L",
-          "notes": ""
-        },
-        {
-          "title": "Scheduled report delivery (email)",
-          "size": "M",
-          "notes": "Nice-to-have but enterprise clients often expect this"
-        }
-      ]
-    },
-    {
-      "epic": "Support Tickets",
-      "stories": [
-        {
-          "title": "Salesforce Service Cloud integration - API setup",
-          "size": "L",
-          "notes": "OAuth, connected app configuration, field mapping"
-        },
-        {
-          "title": "Create ticket form with categorization",
-          "size": "M",
-          "notes": ""
-        },
-        {
-          "title": "Ticket list view with status filters",
-          "size": "M",
-          "notes": ""
-        },
-        {
-          "title": "Ticket detail view with comment thread",
-          "size": "L",
-          "notes": "Bidirectional sync of comments is complex"
-        },
-        {
-          "title": "File attachment support",
-          "size": "M",
-          "notes": "Storage and virus scanning considerations"
-        },
-        {
-          "title": "Real-time ticket status updates",
-          "size": "L",
-          "notes": "Salesforce webhooks or polling strategy needed"
-        }
-      ]
-    },
-    {
-      "epic": "Salesforce CRM Integration",
-      "stories": [
-        {
-          "title": "Customer data sync (account, contacts)",
-          "size": "L",
-          "notes": "Need to map portal users to SF contacts"
-        },
-        {
-          "title": "Sync conflict resolution strategy",
-          "size": "M",
-          "notes": ""
-        },
-        {
-          "title": "Error handling & retry logic",
-          "size": "M",
-          "notes": "SF API rate limits and downtime handling"
-        }
-      ]
-    },
-    {
-      "epic": "Design & UX",
-      "stories": [
-        {
-          "title": "Design system/component library",
-          "size": "L",
-          "notes": "If not reusing existing system"
-        },
-        {
-          "title": "Responsive layouts (desktop/tablet/mobile)",
-          "size": "L",
-          "notes": ""
-        },
-        {
-          "title": "Accessibility compliance (WCAG 2.1 AA)",
-          "size": "L",
-          "notes": "Enterprise often requires this contractually"
-        },
-        {
-          "title": "Empty states, loading states, error states",
-          "size": "M",
-          "notes": ""
-        }
-      ]
-    },
-    {
-      "epic": "Infrastructure & DevOps",
-      "stories": [
-        {
-          "title": "Environment setup (dev/staging/prod)",
-          "size": "M",
-          "notes": ""
-        },
-        {
-          "title": "CI/CD pipeline",
-          "size": "M",
-          "notes": ""
-        },
-        {
-          "title": "Monitoring & alerting",
-          "size": "M",
-          "notes": ""
-        },
-        {
-          "title": "Security review & pen testing",
-          "size": "L",
-          "notes": "Enterprise customers will ask for SOC2, security questionnaires"
-        }
-      ]
-    },
-    {
-      "epic": "Testing & QA",
-      "stories": [
-        {
-          "title": "Unit test coverage (target 80%)",
-          "size": "L",
-          "notes": ""
-        },
-        {
-          "title": "Integration test suite for SF/Stripe",
-          "size": "L",
-          "notes": "Sandbox environments add friction"
-        },
-        {
-          "title": "E2E test automation",
-          "size": "L",
-          "notes": ""
-        },
-        {
-          "title": "UAT with pilot customers",
-          "size": "M",
-          "notes": "Calendar time, not effort"
-        }
-      ]
-    },
-    {
-      "epic": "Documentation & Launch",
-      "stories": [
-        {
-          "title": "User documentation/help center",
-          "size": "M",
-          "notes": ""
-        },
-        {
-          "title": "Admin/internal runbook",
+          "title": "Dyslexia-friendly font options",
           "size": "S",
           "notes": ""
         },
         {
-          "title": "Customer onboarding flow",
+          "title": "Guided onboarding flows",
+          "size": "L",
+          "notes": ""
+        },
+        {
+          "title": "Templates for events/tasks",
           "size": "M",
           "notes": ""
         },
         {
-          "title": "Launch communications & rollout plan",
-          "size": "S",
+          "title": "Mobile-first responsive refinement",
+          "size": "L",
+          "notes": ""
+        },
+        {
+          "title": "PWA implementation (offline, install)",
+          "size": "L",
+          "notes": "Service worker caching strategy needs careful design"
+        }
+      ]
+    },
+    {
+      "epic": "Performance & Scalability",
+      "stories": [
+        {
+          "title": "CDN setup and static asset optimization",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "Job queue for background tasks",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "Database optimization and indexing",
+          "size": "L",
+          "notes": ""
+        },
+        {
+          "title": "Load testing and performance tuning",
+          "size": "L",
+          "notes": ""
+        },
+        {
+          "title": "Horizontal scaling configuration",
+          "size": "M",
+          "notes": ""
+        }
+      ]
+    },
+    {
+      "epic": "Security & Compliance",
+      "stories": [
+        {
+          "title": "OWASP ASVS security review",
+          "size": "L",
+          "notes": "May require external penetration testing"
+        },
+        {
+          "title": "Data encryption at rest implementation",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "Rate limiting and abuse prevention",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "Parental consent workflow (COPPA)",
+          "size": "L",
+          "notes": "Legal review needed; workflow for under-13 edge cases"
+        },
+        {
+          "title": "FERPA data handling compliance",
+          "size": "L",
+          "notes": "Affects data export, retention, access controls"
+        }
+      ]
+    },
+    {
+      "epic": "Pilot & Launch",
+      "stories": [
+        {
+          "title": "Pilot school onboarding",
+          "size": "L",
+          "notes": "First school will surface all the SSO edge cases"
+        },
+        {
+          "title": "Feedback collection and triage",
+          "size": "M",
+          "notes": ""
+        },
+        {
+          "title": "Bug fixes and stabilization",
+          "size": "L",
+          "notes": ""
+        },
+        {
+          "title": "Documentation (user guides, admin guides)",
+          "size": "L",
+          "notes": "Often forgotten; essential for school admin adoption"
+        },
+        {
+          "title": "Analytics dashboard for success metrics",
+          "size": "M",
           "notes": ""
         }
       ]
     }
   ],
   "timeline": {
-    "optimistic_weeks": 14,
-    "realistic_weeks": 20,
-    "pessimistic_weeks": 28,
+    "optimistic_weeks": 28,
+    "realistic_weeks": 38,
+    "pessimistic_weeks": 52,
     "assumptions": [
-      "SSO is required (enterprise standard) - adds 3-4 weeks vs. simple auth",
-      "Usage data source exists and is accessible via API - if not, add 4-6 weeks",
-      "Salesforce and Stripe sandbox environments are already configured",
-      "No major Salesforce customization required (standard objects)",
-      "Designer is dedicated to this project, not split across other work",
-      "Q2 means end of June (13 weeks from Jan 1, or ~18 weeks from mid-Feb)",
-      "No compliance requirements beyond standard security (no HIPAA, FedRAMP, etc.)"
+      "Team has prior experience with school SSO integrations (Google Workspace, Microsoft AAD)",
+      "Legal/compliance review for FERPA/COPPA can be completed in parallel with development",
+      "At least one pilot school is available and responsive during Phase 5",
+      "Design system and UI components can be leveraged from existing library (not built from scratch)",
+      "Google and Microsoft API access/approvals do not require extended enterprise review",
+      "No payment processing in scope (deferred to future phase)",
+      "Stakeholder availability for discovery and feedback does not cause delays"
     ]
   },
   "resourcing": {
     "roles": [
       {
+        "role": "Product Manager",
+        "fte": 1.0,
+        "notes": "Full-time required given stakeholder coordination and compliance requirements"
+      },
+      {
+        "role": "UX Designer",
+        "fte": 1.0,
+        "notes": "Mobile-first design, accessibility expertise required"
+      },
+      {
         "role": "Frontend Engineer",
         "fte": 2.0,
-        "notes": "Adequate for portal UI, may bottleneck during integration testing"
+        "notes": "PWA, real-time updates, accessibility hardening justify two FTEs"
       },
       {
         "role": "Backend Engineer",
-        "fte": 1.0,
-        "notes": "SEVERELY CONSTRAINED - Salesforce, Stripe, auth, usage reports all backend-heavy"
-      },
-      {
-        "role": "Designer",
-        "fte": 1.0,
-        "notes": "Adequate if no other projects; needs to front-load work"
-      },
-      {
-        "role": "QA Engineer",
-        "fte": 0.0,
-        "notes": "NOT ALLOCATED - who is testing integrations?"
+        "fte": 2.0,
+        "notes": "Multi-tenant architecture, multiple integrations, compliance requirements"
       },
       {
         "role": "DevOps/Platform Engineer",
-        "fte": 0.0,
-        "notes": "NOT ALLOCATED - who owns infra and security review?"
+        "fte": 1.0,
+        "notes": "CI/CD, multi-environment, observability, security hardening"
       },
       {
-        "role": "Product Manager",
-        "fte": 0.0,
-        "notes": "NOT ALLOCATED - who is making scope decisions and coordinating UAT?"
+        "role": "QA Engineer",
+        "fte": 1.0,
+        "notes": "Critical for compliance; integration testing across SSO providers"
+      },
+      {
+        "role": "Security/Compliance Specialist",
+        "fte": 0.5,
+        "notes": "Part-time or consultant; FERPA/COPPA/OWASP expertise"
       }
     ],
-    "total_fte": 4.0,
+    "total_fte": 8.5,
     "red_flags": [
-      "Single backend engineer is a critical-path bottleneck for a project with two major third-party integrations",
-      "No dedicated QA risks shipping bugs to enterprise customers who have low tolerance for issues",
-      "No PM/TPM allocated - scope creep and coordination overhead will fall on engineers",
-      "If backend engineer is unavailable (PTO, sick, attrition), project stops completely"
+      "Proposed 24-week timeline is not achievable with stated scope \u2014 realistic estimate is 38 weeks",
+      "No QA mentioned in brief \u2014 compliance requirements demand dedicated QA",
+      "No security/compliance specialist mentioned \u2014 FERPA/COPPA/OWASP cannot be afterthoughts",
+      "Four distinct SSO/calendar/drive integrations (Google + Microsoft \u00d7 Auth + Files) require significant engineering time",
+      "WCAG 2.1 AA compliance across all features is substantial \u2014 often underestimated by 30-50%",
+      "Multi-tenant architecture with data isolation for minors' data requires careful design upfront"
     ]
   },
   "risks": [
     {
-      "risk": "Salesforce integration complexity - custom objects, validation rules, or triggers in your SF org can break assumptions and require rework",
+      "risk": "School SSO configuration variance \u2014 each school's Google Workspace or Microsoft AAD setup differs; first 3-5 schools will surface edge cases requiring custom handling",
       "likelihood": "High",
       "impact": "High",
-      "mitigation": "Conduct SF schema review in week 1; get SF admin involved; build integration spike before committing to timeline"
+      "mitigation": "Budget 2 weeks of integration debugging per SSO provider; create detailed SSO setup checklist for school admins; build diagnostic tooling"
     },
     {
-      "risk": "Stripe multi-entity complexity - if customers span multiple Stripe accounts or have complex subscription structures, invoice retrieval becomes significantly harder",
+      "risk": "FERPA/COPPA compliance scope creep \u2014 legal review may surface requirements not in current scope (parental consent flows, data retention limits, audit requirements)",
+      "likelihood": "High",
+      "impact": "High",
+      "mitigation": "Engage legal counsel in week 1; block feature development on compliance review sign-off; maintain compliance requirements backlog"
+    },
+    {
+      "risk": "Google/Microsoft API approval delays \u2014 enterprise API access for Drive/Calendar may require extended security review from Google/Microsoft (4-8 weeks)",
+      "likelihood": "Medium",
+      "impact": "High",
+      "mitigation": "Submit API access requests in week 1; design integration layer to gracefully degrade; identify which integrations can ship post-MVP"
+    },
+    {
+      "risk": "Accessibility remediation cascade \u2014 WCAG 2.1 AA audit in Phase 4 may surface systemic issues requiring significant rework of earlier features",
       "likelihood": "Medium",
       "impact": "Medium",
-      "mitigation": "Audit Stripe data model upfront; confirm 1:1 customer-to-Stripe mapping"
+      "mitigation": "Integrate accessibility testing into every sprint; use automated a11y testing in CI; conduct mid-project accessibility audit at week 12"
     },
     {
-      "risk": "SSO configuration delays - enterprise IdP setup (Okta, Azure AD, etc.) requires customer IT involvement and often takes 2-4 weeks per customer",
-      "likelihood": "High",
+      "risk": "Pilot school responsiveness \u2014 pilot launch requires active participation from students, advisors, and admins; school schedules (breaks, exams) may cause delays",
+      "likelihood": "Medium",
       "impact": "Medium",
-      "mitigation": "Start SSO conversations with pilot customers immediately; have fallback auth ready for launch"
+      "mitigation": "Identify pilot school by week 4; align pilot timing with school calendar; have backup pilot school identified"
     },
     {
-      "risk": "Usage data source undefined - if usage data doesn't exist in a queryable format, this becomes a data engineering project",
+      "risk": "Real-time collaboration complexity \u2014 discussions, Kanban, and notifications with real-time updates significantly increase frontend and infrastructure complexity",
       "likelihood": "Medium",
-      "impact": "High",
-      "mitigation": "Clarify usage data source in week 1; if it requires ETL, consider descoping from v1"
+      "impact": "Medium",
+      "mitigation": "Evaluate WebSocket vs polling trade-offs early; consider managed service (Pusher, Ably) vs self-hosted; scope real-time to specific features only"
     },
     {
-      "risk": "Backend engineer burnout or departure - single point of failure for all integration and API work",
-      "likelihood": "Medium",
+      "risk": "Multi-tenant data isolation failure \u2014 bug allowing cross-tenant data access would be catastrophic given minor students' data",
+      "likelihood": "Low",
       "impact": "High",
-      "mitigation": "Add 0.5-1.0 FTE backend support; cross-train frontend engineers on backend basics"
+      "mitigation": "Implement tenant isolation at database level (row-level security or schema separation); mandatory security review of all data access paths; penetration testing before pilot"
     },
     {
-      "risk": "Enterprise security requirements emerge late - SOC2 questionnaires, pen test findings, or data residency requirements can force rework",
-      "likelihood": "Medium",
-      "impact": "High",
-      "mitigation": "Engage security team now; get ahead of customer security reviews; budget 2 weeks for remediation"
-    },
-    {
-      "risk": "Q2 deadline is not achievable with current scope and team",
+      "risk": "Gamification scope creep \u2014 points/badges system has unbounded complexity; stakeholders will request more features once they see it",
       "likelihood": "High",
-      "impact": "High",
-      "mitigation": "Either reduce scope (cut SSO, cut usage reports from v1) or add backend headcount immediately"
+      "impact": "Low",
+      "mitigation": "Define fixed v1 gamification scope (attendance points, 3 badge types); defer leaderboards and custom badges to post-launch"
     }
   ],
   "confidence": {
     "level": "Low",
-    "rationale": "The brief has multiple undefined elements (usage data source, SSO requirements, Salesforce customization level) and the team is undersized for the integration complexity. Two major third-party integrations with a single backend engineer is a known failure pattern. Q2 launch is aggressive.",
+    "rationale": "The proposed 24-week timeline is approximately 40% shorter than what this scope realistically requires. The combination of FERPA/COPPA compliance for minors, four major third-party integrations (Google/Microsoft \u00d7 Auth/Files), multi-tenant architecture, and WCAG 2.1 AA accessibility creates compounding complexity. Without confirmed SSO configurations from pilot schools and completed legal review, significant unknowns remain.",
     "what_would_increase_confidence": [
-      "Confirm exact usage data source and access method",
-      "Audit Salesforce org for custom objects and existing integrations",
-      "Clarify SSO requirements - is enterprise SSO required for launch or a fast-follow?",
-      "Add at least 0.5 FTE backend support",
-      "Define MVP scope explicitly - what can be cut if timeline slips?",
-      "Confirm Q2 means June 30 vs. April 1 (massive difference)"
+      "Complete FERPA/COPPA legal review and document all compliance requirements",
+      "Secure pilot school commitment with confirmed SSO provider and admin access",
+      "Validate Google Workspace and Microsoft AAD API access timelines",
+      "Add dedicated QA and security/compliance specialist to team",
+      "Extend timeline to 36-40 weeks or reduce scope (e.g., defer Microsoft integrations to post-launch)",
+      "Conduct technical spike on multi-tenant data isolation approach"
     ]
   },
-  "open_questions": [
-    "Where does usage data live today, and what format is it in?",
-    "Is enterprise SSO (SAML/OIDC) required for launch, or can we ship with email/password first?",
-    "How customized is your Salesforce org? Any managed packages, custom objects, or validation rules on Cases?",
-    "Do customers have one Stripe customer ID each, or are there multi-subscription/multi-account scenarios?",
-    "What does 'Q2' mean specifically - April 1, June 30, or something in between?",
-    "Are there existing security/compliance requirements (SOC2, GDPR, specific customer DPAs)?",
-    "Who is the product owner making scope tradeoff decisions?",
-    "Is there an existing design system to reuse, or starting from scratch?",
-    "Are there pilot customers identified for UAT, and are they already engaged?"
-  ],
   "confidence_scorecard": {
-    "overall_pct": 42,
+    "overall_pct": 39,
     "dimensions": [
       {
         "dimension": "Scope clarity",
-        "score": 4,
+        "score": 6,
         "max": 10,
         "weight": 25,
-        "rationale": "Usage data source undefined \u2014 could add 4-6 weeks if ETL required",
-        "action": "Confirm where usage data lives and whether API or direct DB access exists"
+        "rationale": "Brief is detailed but compliance requirements (FERPA/COPPA specifics) and integration details (which SSO providers, which schools) are undefined",
+        "action": "Complete legal compliance review and confirm pilot school SSO configuration before sprint planning"
       },
       {
         "dimension": "Team adequacy",
         "score": 3,
         "max": 10,
         "weight": 20,
-        "rationale": "No QA, no DevOps, single backend engineer for two major integrations",
-        "action": "Add 0.5 FTE backend support and dedicated QA for integration testing"
+        "rationale": "No team specified in brief; estimate assumes 8.5 FTE but actual team composition unknown; no QA or security specialist mentioned",
+        "action": "Confirm team composition; add dedicated QA and security/compliance specialist"
       },
       {
         "dimension": "Integration risk",
-        "score": 4,
+        "score": 3,
         "max": 10,
         "weight": 25,
-        "rationale": "Salesforce org not audited; Stripe multi-subscription complexity unknown",
-        "action": "Run Salesforce schema audit and Stripe data model review in week 1"
+        "rationale": "Four major integrations (Google SSO, Microsoft SSO, Drive, OneDrive) plus calendar sync; school-specific SSO configs vary widely; API approval timelines unknown",
+        "action": "Submit API access requests immediately; conduct SSO integration spike with actual school tenant in week 1-2"
       },
       {
         "dimension": "Timeline realism",
-        "score": 6,
+        "score": 2,
         "max": 10,
         "weight": 15,
-        "rationale": "20-week realistic estimate is aggressive but achievable if no unknowns materialise",
-        "action": "Build in 2-week contingency buffer; identify which epics can be deferred to v2"
+        "rationale": "24-week proposed timeline is not achievable \u2014 scope requires 38+ weeks; no buffer for compliance findings or integration debugging",
+        "action": "Extend timeline to 36-40 weeks or explicitly defer integrations and Phase 3 features to post-launch"
       },
       {
         "dimension": "Assumption stability",
         "score": 5,
         "max": 10,
         "weight": 15,
-        "rationale": "3 of 7 assumptions unverified \u2014 usage data, Salesforce config, Q2 deadline definition",
-        "action": "Answer top 3 open questions before sprint planning begins"
+        "rationale": "Key assumptions unverified: SSO experience, legal review timeline, pilot school availability, API approval timelines",
+        "action": "Validate top 3 assumptions (legal timeline, pilot school, API access) before committing to timeline"
       }
     ]
-  }
+  },
+  "open_questions": [
+    "Which schools are confirmed for pilot, and what SSO providers do they use (Google Workspace, Microsoft AAD, or both)?",
+    "Has legal counsel reviewed FERPA/COPPA requirements, and are there known compliance blockers for storing minors' data?",
+    "Is parental consent required for students under 13, and if so, what is the approved workflow?",
+    "What is the actual team composition and their experience with school SSO integrations?",
+    "Are Google and Microsoft API access approvals already in progress, or do they need to be initiated?",
+    "Is the 24-week timeline a hard constraint (e.g., tied to school year), or can it be extended?",
+    "Which features can be deferred to post-launch if timeline is fixed (e.g., Microsoft integrations, task dependencies, gamification)?",
+    "Is there an existing design system to leverage, or must components be built from scratch?",
+    "What is the expected scale at launch (number of schools, students, concurrent users)?",
+    "Is there budget for external security penetration testing before pilot launch?"
+  ]
 }
