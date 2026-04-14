@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: "IBM Plex Sans", sans-serif; background: transparent; color: #ccc; padding: 4px 0; }
+
+/* ── Summary bar ─────────────────────────────────────────────────────────── */
+.summary-bar { display: flex; gap: 36px; margin-bottom: 1.2rem; }
+.lbl { font-size: 11px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; margin-bottom: 4px; }
+.val { font-family: "IBM Plex Mono", monospace; font-size: 26px; font-weight: 600; color: #e8e8e8; }
+
+/* ── Collapsible rows ────────────────────────────────────────────────────── */
+.conf-row { display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 8px 0; user-select: none; }
+.conf-row:hover .conf-label { color: #fff; }
+.conf-label { font-size: 14px; color: #888; }
+.conf-arrow { font-size: 11px; color: #555; transition: transform .2s; }
+.conf-panel { display: none; padding: 10px 0 14px 0; }
+.conf-rationale { font-size: 14px; color: #888; line-height: 1.6; margin-bottom: 10px; }
+.conf-item { font-size: 13px; color: #777; padding: 4px 0; border-bottom: 1px solid #1a1a1a; }
+.conf-item:last-child { border-bottom: none; }
+.divider { border: none; border-top: 1px solid #1e1e1e; margin: 10px 0 6px; }
+
+/* ── Epic rows ───────────────────────────────────────────────────────────── */
+/* Fixed grid: chev(18px) | badges(230px, fits all 4 sizes+counts) | title(1fr) | raid(auto) */
+.epic-row {
+  display: grid;
+  grid-template-columns: 18px 230px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 0;
+  border-bottom: 1px solid #222;
+  cursor: pointer;
+  user-select: none;
+}
+.epic-row:hover { background: #0d0d0d; }
+.epic-badges { display: flex; gap: 18px; align-items: center; }
+.epic-title  { font-size: 15px; font-weight: 600; color: #ddd; }
+.epic-raid   { display: flex; gap: 5px; align-items: center; flex-shrink: 0; }
+.epic-body   { display: none; }
+
+/* ── Story rows ──────────────────────────────────────────────────────────── */
+/* Indent story row so its title column aligns with the epic title column:
+   Epic title starts at: 18px(chev) + 10px(gap) + 230px(badges) + 10px(gap) = 268px
+   Story title starts at: pad + 18px(chev) + 10px(gap) + 100px(badges) + 10px(gap)
+   So pad = 268 - 18 - 10 - 100 - 10 = 130px */
+.story-row {
+  display: grid;
+  grid-template-columns: 18px 100px 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0 9px 130px;
+  border-bottom: 1px solid #1a1a1a;
+  cursor: pointer;
+  user-select: none;
+}
+.story-row:hover { background: #0a0a0a; }
+.story-title { font-size: 14px; color: #bbb; }
+.badges { display: flex; gap: 5px; align-items: center; }
+
+/* Story detail aligns with story title: 130 + 18 + 10 + 100 + 10 = 268px */
+.story-detail { display: none; padding: 10px 0 14px 268px; border-bottom: 1px solid #1a1a1a; }
+
+/* ── Chevron ─────────────────────────────────────────────────────────────── */
+.chev { color: #555; font-size: 11px; width: 14px; flex-shrink: 0; transition: transform .15s; display: inline-block; }
+.chev.open { transform: rotate(90deg); color: #888; }
+
+/* ── Size pills ──────────────────────────────────────────────────────────── */
+.pill { font-family: "IBM Plex Mono", monospace; font-size: 13px; font-weight: 700; padding: 3px 10px; border-radius: 4px; position: relative; display: inline-block; text-align: center; }
+.pill-S  { background: #0d2137; color: #60a5fa; min-width: 30px; }
+.pill-M  { background: #1a1a0d; color: #d4b44a; min-width: 30px; }
+.pill-L  { background: #1a0d1a; color: #c084fc; min-width: 28px; }
+.pill-XL { background: #1a0d0d; color: #f87171; min-width: 34px; }
+
+.pill-count {
+  position: absolute; top: -8px; right: -9px;
+  background: #2a2a2a; color: #ddd;
+  font-size: 10px; font-weight: 700;
+  width: 16px; height: 16px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: "IBM Plex Mono", monospace;
+  border: 1px solid #555;
+}
+
+/* ── RAID / impact tags ──────────────────────────────────────────────────── */
+.raid-tag { font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 4px; font-family: "IBM Plex Mono", monospace; }
+.tag-R { background: #2a0d0d; color: #f87171; }
+.tag-A { background: #1a1400; color: #fbbf24; }
+.tag-I { background: #001a2a; color: #60a5fa; }
+.tag-D { background: #0d1a0d; color: #4ade80; }
+.raid-absent { font-size: 14px; color: #2a2a2a; font-weight: 700; padding: 0 3px; }
+
+.impact { font-size: 12px; padding: 3px 9px; border-radius: 4px; font-family: "IBM Plex Mono", monospace; font-weight: 600; }
+.impact-H { background: #2a0d0d; color: #f87171; }
+.impact-M { background: #1a1200; color: #fbbf24; }
+.impact-L { background: #0d1a0d; color: #4ade80; }
+
+/* ── Story detail sections ───────────────────────────────────────────────── */
+.section-hdr { font-size: 12px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: #c8c8c8; margin: 12px 0 7px; border-left: 3px solid #444; padding-left: 8px; }
+.detail-row { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; border-bottom: 1px solid #141414; }
+.detail-row:last-child { border-bottom: none; }
+.detail-text { font-size: 14px; color: #999; line-height: 1.5; }
+.desc-text   { font-size: 15px; color: #888; line-height: 1.6; margin-bottom: 2px; }
+
+/* ── Resourcing panel ────────────────────────────────────────────────────── */
+.res-panel  { display: none; padding: 6px 0 10px 0; }
+.res-row    { display: grid; grid-template-columns: 200px 80px 1fr; gap: 10px; padding: 7px 0; border-bottom: 1px solid #141414; align-items: baseline; }
+.res-role   { font-size: 14px; font-weight: 500; }
+.res-fte    { font-family: "IBM Plex Mono", monospace; font-size: 13px; font-weight: 600; text-align: right; }
+.res-note   { font-size: 13px; color: #666; line-height: 1.4; }
+.res-flag   { font-size: 13px; color: #f59e0b; padding: 5px 0 4px; border-bottom: 1px solid #1a1a1a; }
+.res-flag:last-child { border-bottom: none; }
+.res-toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px 0 6px; border-top: 1px solid #1e1e1e; margin-top: 4px; user-select: none; }
+.res-toggle:hover .conf-label { color: #fff; }
+
+/* ── Confidence scorecard ────────────────────────────────────────────────── */
+.sc-header    { display: flex; align-items: baseline; gap: 6px; margin: 10px 0 12px; }
+.sc-pct       { font-family: "IBM Plex Mono", monospace; font-size: 28px; font-weight: 700; }
+.sc-pct-label { font-size: 13px; color: #555; }
+.sc-row       { display: grid; grid-template-columns: 160px 1fr 52px; align-items: center; gap: 10px; margin-top: 10px; }
+.sc-dim       { font-size: 13px; color: #aaa; font-weight: 500; }
+.sc-bar-wrap  { height: 6px; background: #1a1a1a; border-radius: 3px; overflow: hidden; }
+.sc-bar       { height: 100%; border-radius: 3px; }
+.sc-score     { font-family: "IBM Plex Mono", monospace; font-size: 12px; font-weight: 600; text-align: right; }
+.sc-detail    { display: flex; flex-direction: column; gap: 2px; padding: 3px 0 8px; margin-left: 170px; border-bottom: 1px solid #141414; }
+.sc-note      { font-size: 12px; color: #555; line-height: 1.4; }
+.sc-action    { font-size: 12px; color: #3a6a3a; }
+.sc-detail:last-child { border-bottom: none; }
