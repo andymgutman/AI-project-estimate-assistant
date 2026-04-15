@@ -199,31 +199,95 @@ def _build_resourcing_html(res):
         '<div class="res-panel" id="res-panel">' + role_rows + flags_section + '</div>'
     )
 
+import math as _math
+
+def _gauge_path(cx, cy, r, start_deg, end_deg):
+    s  = _math.radians(start_deg)
+    e  = _math.radians(end_deg)
+    ir = r - 38
+    ox1 = cx + r  * _math.cos(s);  oy1 = cy - r  * _math.sin(s)
+    ox2 = cx + r  * _math.cos(e);  oy2 = cy - r  * _math.sin(e)
+    ix1 = cx + ir * _math.cos(s);  iy1 = cy - ir * _math.sin(s)
+    ix2 = cx + ir * _math.cos(e);  iy2 = cy - ir * _math.sin(e)
+    lg  = 1 if abs(end_deg - start_deg) > 180 else 0
+    return (f"M {ox1:.1f} {oy1:.1f} A {r} {r} 0 {lg} 0 {ox2:.1f} {oy2:.1f} "
+            f"L {ix2:.1f} {iy2:.1f} A {ir} {ir} 0 {lg} 1 {ix1:.1f} {iy1:.1f} Z")
+
+def _build_gauge_svg(sc_pct, dimensions):
+    """SVG semicircle gauge. 5 neutral segments, needle at overall_pct."""
+    cx, cy, r = 130, 158, 108
+    gap    = 3
+    n      = 5
+    seg    = (180 - gap * (n - 1)) / n
+    colors = ["#3d3d52","#4e4e68","#5f5f7e","#707094","#8181aa"]
+    needle_rad = _math.radians(180 - (sc_pct / 100) * 180)
+    nl   = 80
+    nx   = cx + nl * _math.cos(needle_rad)
+    ny   = cy - nl * _math.sin(needle_rad)
+    paths = ""
+    for i in range(n):
+        start   = 180 - i * (seg + gap)
+        end     = start - seg
+        score   = dimensions[i].get("score", 0) if i < len(dimensions) else 0
+        opacity = round(0.40 + (score / 10) * 0.60, 2)
+        paths  += ('<path d="' + _gauge_path(cx, cy, r, end, start) + '" '
+                   'fill="' + colors[i] + '" fill-opacity="' + str(opacity) + '" '
+                   'stroke="#1a1a2a" stroke-width="1.5"/>')
+    ticks = ""
+    for t in range(0, 101, 10):
+        a  = _math.radians(180 - t * 1.8)
+        r1 = r - 6
+        r2 = r - 14 if t % 50 == 0 else r - 10
+        ticks += ('<line x1="' + f"{cx+r1*_math.cos(a):.1f}" + '" y1="' + f"{cy-r1*_math.sin(a):.1f}" + '" '
+                  'x2="' + f"{cx+r2*_math.cos(a):.1f}" + '" y2="' + f"{cy-r2*_math.sin(a):.1f}" + '" '
+                  'stroke="#444" stroke-width="1"/>')
+    pct_color = "#ef4444" if sc_pct < 45 else ("#f59e0b" if sc_pct < 70 else "#22c55e")
+    return (
+        '<svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:260px;height:auto;display:block">'
+        + paths + ticks
+        + '<circle cx="' + str(cx) + '" cy="' + str(cy) + '" r="72" fill="#0d0d14" stroke="#222" stroke-width="1"/>'
+        + '<line x1="' + str(cx) + '" y1="' + str(cy) + '" x2="' + f"{nx:.1f}" + '" y2="' + f"{ny:.1f}" + '" stroke="#ddd" stroke-width="2.5" stroke-linecap="round"/>'
+        + '<circle cx="' + str(cx) + '" cy="' + str(cy) + '" r="7" fill="#ccc" stroke="#111" stroke-width="1.5"/>'
+        + '<text x="' + str(cx) + '" y="' + str(cy+26) + '" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="22" font-weight="700" fill="' + pct_color + '">' + str(sc_pct) + '%</text>'
+        + '<text x="' + str(cx) + '" y="' + str(cy+42) + '" text-anchor="middle" font-family="IBM Plex Sans,sans-serif" font-size="9" fill="#555">CONFIDENCE</text>'
+        + '<text x="44.8" y="135.3" font-family="IBM Plex Sans,sans-serif" font-size="9" font-weight="700" fill="#ccc" text-anchor="middle">Scope</text>'
+        + '<text x="76.9" y="89.5"  font-family="IBM Plex Sans,sans-serif" font-size="9" font-weight="700" fill="#ccc" text-anchor="middle">Team</text>'
+        + '<text x="130"  y="72.0"  font-family="IBM Plex Sans,sans-serif" font-size="9" font-weight="700" fill="#ccc" text-anchor="middle">Integ.</text>'
+        + '<text x="183.1" y="89.5" font-family="IBM Plex Sans,sans-serif" font-size="9" font-weight="700" fill="#ccc" text-anchor="middle">Timeline</text>'
+        + '<text x="215.2" y="135.3" font-family="IBM Plex Sans,sans-serif" font-size="9" font-weight="700" fill="#ccc" text-anchor="middle">Assumpt.</text>'
+        + '</svg>'
+    )
+
 def _build_scorecard_html(sc):
     if not sc.get("dimensions"):
         return ""
-    sc_pct    = sc.get("overall_pct", 0)
-    pct_color = _pct_color(sc_pct)
-    bar_rows  = ""
-    for dim in sc["dimensions"]:
+    sc_pct     = sc.get("overall_pct", 0)
+    dimensions = sc["dimensions"]
+    gauge_svg  = _build_gauge_svg(sc_pct, dimensions)
+
+    # Right panel: dimension rows — name, score badge, bar, rationale, action
+    dim_rows = ""
+    for dim in dimensions:
         score   = dim.get("score", 0)
         d_color = "#ef4444" if score <= 3 else ("#f59e0b" if score <= 6 else "#22c55e")
-        bar_rows += (
-            '<div class="sc-row">'
-            '<span class="sc-dim">' + dim.get("dimension","") + '</span>'
-            '<div class="sc-bar-wrap"><div class="sc-bar" style="width:' + str(score*10) + '%;background:' + d_color + '"></div></div>'
-            '<span class="sc-score" style="color:' + d_color + '">' + str(score) + '/10</span>'
+        bar_pct = score * 10
+        dim_rows += (
+            '<div class="sc2-row">'
+            '<div class="sc2-header">'
+            '<span class="sc2-name">' + dim.get("dimension","") + '</span>'
+            '<span class="sc2-score" style="color:' + d_color + '">' + str(score) + '/10</span>'
             '</div>'
-            '<div class="sc-detail">'
-            '<span class="sc-note">' + dim.get("rationale","") + '</span>'
-            '<span class="sc-action">-&gt; ' + dim.get("action","") + '</span>'
+            '<div class="sc2-bar-wrap"><div class="sc2-bar" style="width:' + str(bar_pct) + '%;background:' + d_color + '"></div></div>'
+            '<div class="sc2-rationale">' + dim.get("rationale","") + '</div>'
+            '<div class="sc2-action">&#8594; ' + dim.get("action","") + '</div>'
             '</div>'
         )
+
     return (
-        '<div class="sc-header">'
-        '<span class="sc-pct" style="color:' + pct_color + '">' + str(sc_pct) + '%</span>'
-        '<span class="sc-pct-label"> overall confidence</span>'
-        '</div>' + bar_rows
+        '<div class="sc2-wrap">'
+        '<div class="sc2-left">' + gauge_svg + '</div>'
+        '<div class="sc2-right">' + dim_rows + '</div>'
+        '</div>'
     )
 
 def _build_metrics_html(est, brief_panel, resourcing_html):

@@ -111,16 +111,16 @@ body { font-family: "IBM Plex Sans", sans-serif; background: transparent; color:
 .res-toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px 0 6px; border-top: 1px solid #1e1e1e; margin-top: 4px; user-select: none; }
 .res-toggle:hover .conf-label { color: #fff; }
 
-/* ── Confidence scorecard ────────────────────────────────────────────────── */
-.sc-header    { display: flex; align-items: baseline; gap: 6px; margin: 10px 0 12px; }
-.sc-pct       { font-family: "IBM Plex Mono", monospace; font-size: 28px; font-weight: 700; }
-.sc-pct-label { font-size: 13px; color: #555; }
-.sc-row       { display: grid; grid-template-columns: 160px 1fr 52px; align-items: center; gap: 10px; margin-top: 10px; }
-.sc-dim       { font-size: 13px; color: #aaa; font-weight: 500; }
-.sc-bar-wrap  { height: 6px; background: #1a1a1a; border-radius: 3px; overflow: hidden; }
-.sc-bar       { height: 100%; border-radius: 3px; }
-.sc-score     { font-family: "IBM Plex Mono", monospace; font-size: 12px; font-weight: 600; text-align: right; }
-.sc-detail    { display: flex; flex-direction: column; gap: 2px; padding: 3px 0 8px; margin-left: 170px; border-bottom: 1px solid #141414; }
-.sc-note      { font-size: 12px; color: #555; line-height: 1.4; }
-.sc-action    { font-size: 12px; color: #3a6a3a; }
-.sc-detail:last-child { border-bottom: none; }
+/* ── Confidence scorecard — two-panel gauge layout ───────────────────────── */
+.sc2-wrap    { display: grid; grid-template-columns: minmax(200px, 260px) 1fr; gap: 20px; align-items: start; margin: 12px 0 4px; }
+.sc2-left    { display: flex; align-items: center; justify-content: center; }
+.sc2-right   { display: flex; flex-direction: column; gap: 0; }
+.sc2-row     { padding: 8px 0; border-bottom: 1px solid #141414; }
+.sc2-row:last-child { border-bottom: none; }
+.sc2-header  { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px; }
+.sc2-name    { font-size: 13px; font-weight: 500; color: #ccc; }
+.sc2-score   { font-family: "IBM Plex Mono", monospace; font-size: 13px; font-weight: 700; }
+.sc2-bar-wrap { height: 5px; background: #1e1e1e; border-radius: 3px; overflow: hidden; margin-bottom: 5px; }
+.sc2-bar     { height: 100%; border-radius: 3px; }
+.sc2-rationale { font-size: 12px; color: #666; line-height: 1.45; margin-bottom: 2px; }
+.sc2-action  { font-size: 12px; color: #3a5a3a; line-height: 1.4; }
