@@ -1,9 +1,73 @@
-Build a customer portal where enterprise clients can log in, view their invoices, 
-download usage reports, and open support tickets. 
+# Project Overview
 
-It needs to integrate with our existing Salesforce CRM and Stripe billing system. 
-The team is 2 frontend engineers, 1 backend engineer, and 1 designer. 
-We'd like to launch in Q2.
+A web platform for high school students to manage and collaborate on school clubs\. It centralizes member management, communication, event planning, and resources\. Audience: students \(13–18\), club leaders, and faculty advisors\. Objectives: streamline club operations, improve engagement and transparency, reduce administrative overhead, and provide compliant, secure access\.
 
-Authentication should use SSO (SAML or OAuth). The portal needs to be white-labelable 
-for our top 3 enterprise customers. We haven't decided on a frontend framework yet.
+# Core Features
+
+## Club Collaboration
+
+- Club home with announcements, pinned resources, and task board \(Kanban\)\.
+- Discussions with threads, [@mentions](https://github.com/mentions), reactions; optional advisor moderation\.
+- Shared documents and files \(integrations: Google Drive, Microsoft 365\)\.
+- Polls&#x2F;voting for decisions; quorum and timebox settings\.
+
+## Member Management
+
+- Join requests with eligibility checks \(school SSO, grade limits\)\.
+- Roles per club: Member, Officer, President, Advisor; custom permissions\.
+- Roster with contact preferences; bulk import&#x2F;export \(CSV\)\.
+- Attendance tracking; points&#x2F;badges for participation\.
+
+## Activity Management
+
+- Event creation \(meetings, fundraisers, competitions\) with RSVPs, capacity, waitlists\.
+- Calendars per club with school\-wide aggregation; iCal export\.
+- Task assignments with due dates, dependencies, and reminders\.
+- Budget tracking: requests, approvals, expense logs, receipt uploads\.
+
+# User Roles
+
+- Student Member: view club content, participate in discussions, RSVP, complete tasks\.
+- Club Leader \(Officer&#x2F;President\): manage content, events, tasks, polls; approve members; edit roster; manage budget requests\.
+- Advisor: oversight, moderation, approvals \(events&#x2F;budgets\), access reports, set compliance rules\.
+- School Admin \(global\): manage schools&#x2F;clubs, SSO, policies, data exports, audit logs\.
+
+# Technical Requirements
+
+- Web app \(responsive\) with PWA support\. Modern stack \(e\.g\., React&#x2F;Vue \+ Node&#x2F;Go \+ PostgreSQL\)\.
+- Auth: school SSO \(Google Workspace&#x2F;Microsoft AAD\), optional email invite; MFA for leaders&#x2F;admins\.
+- Security: role\-based access control, least privilege; encrypted data in transit&#x2F;at rest; audit logs; rate limiting; OWASP ASVS; parental&#x2F;FERPA\-compliant data handling; COPPA reviewed\.
+- Data: multi\-tenant per school; backups, retention policies; object storage for files; search indexing\.
+- Integrations: Calendar \(Google&#x2F;Microsoft\), Drive&#x2F;OneDrive, email, push notifications\.
+- Scalability: stateless services, horizontal scaling, CDN, job queue for notifications&#x2F;background tasks\.
+- Observability: structured logging, metrics, tracing, uptime and error monitoring\.
+
+# User Experience
+
+- Mobile\-first, clear hierarchy, minimal steps for core actions\.
+- Plain language, guided onboarding, templates for events&#x2F;tasks\.
+- Accessibility: WCAG 2\.1 AA, keyboard navigation, captions&#x2F;alt text, color contrast, dyslexia\-friendly font options\.
+
+# Success Metrics
+
+- Adoption: % students with active sessions, clubs created\.
+- Engagement: weekly active users, posts&#x2F;events&#x2F;tasks per club, RSVP rates, attendance\.
+- Efficiency: time to schedule an event, approval turnaround, reduction in email threads\.
+- Retention: month\-3 cohort retention, advisor satisfaction \(CSAT\), NPS\.
+- Reliability: uptime, error rate, page load times\.
+
+# Timeline &amp; Milestones
+
+- Phase 1 \(0–4 wks\): Discovery, IA, UX flows, technical design\.
+- Phase 2 \(5–10 wks\): MVP \(SSO, clubs, posts, events, RSVPs, roster\)\.
+- Phase 3 \(11–16 wks\): Tasks, budgets, polls, advisor tools, audit logs\.
+- Phase 4 \(17–20 wks\): Integrations, accessibility hardening, performance\.
+- Phase 5 \(21–24 wks\): Pilot launch, feedback, fixes, analytics\.
+
+# Future Considerations
+
+- Mobile apps \(native\), SMS notifications, volunteer hours transcript export\.
+- Inter\-school collaborations with gated communities\.
+- Advanced analytics dashboards, AI\-assisted summaries and moderation\.
+- Fundraising&#x2F;payment processing, inventory management, competition brackets\.
+
