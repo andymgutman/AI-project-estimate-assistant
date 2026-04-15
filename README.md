@@ -1,10 +1,5 @@
 # AI Project Estimator
 
-> Most estimation tools tell you what you plan to build.  
-> This one tells you what you're **assuming**, what could **go wrong**, and what you **don't know yet**.
-
----
-
 ## The problem this solves
 
 I've spent years watching teams underestimate projects — not because they were careless, but because estimation is usually done informally, assumptions stay implicit, and risks only surface after they've already caused damage.
