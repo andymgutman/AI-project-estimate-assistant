@@ -96,15 +96,23 @@ else:
 
 
 # ── RAID classifier ───────────────────────────────────────────────────────────
-_RISK_KEYWORDS       = {"complex","unclear","undefined","custom","unknown","integration","sync","webhook","security","constrained","bottleneck","rework"}
-_ASSUMPTION_KEYWORDS = {"existing","standard","no major","if not","assumes","already","configured","reusing"}
-_DEPENDENCY_KEYWORDS = {"integration","salesforce","stripe","api","oauth","sandbox","third-party","external"}
+# ── RAID keyword fallback (used when model did not generate raid items) ──────
+_RISK_KEYWORDS       = {"complex","unclear","undefined","custom","unknown","integration",
+                         "sync","webhook","security","constrained","bottleneck","rework"}
+_ASSUMPTION_KEYWORDS = {"existing","standard","no major","if not","assumes",
+                         "already","configured","reusing"}
+_DEPENDENCY_KEYWORDS = {"integration","salesforce","stripe","api","oauth",
+                         "sandbox","third-party","external"}
 _ISSUE_KEYWORDS      = {"not allocated","severely","bottleneck","who is","who owns"}
 _HIGH_IMPACT_KEYS    = {"undefined","unclear","custom","security"}
 
-def classify_raid(story):
-    text = (story["title"] + " " + story.get("notes", "")).lower()
-    size = story.get("size", "M")
+# Map single-letter type codes to display labels
+_RAID_LABELS = {"R": "Risk", "A": "Assumption", "I": "Issue", "D": "Dependency"}
+
+def _keyword_classify(story: dict) -> list[dict]:
+    """Keyword heuristic fallback — used when model-generated raid is absent."""
+    text  = (story["title"] + " " + story.get("notes", "")).lower()
+    size  = story.get("size", "M")
     items = []
     if any(k in text for k in _RISK_KEYWORDS) or size in ("L", "XL"):
         prob   = "H" if size == "XL" else ("M" if size == "L" else "L")
@@ -122,6 +130,37 @@ def classify_raid(story):
         items.append({"type":"I","label":"Issue","prob":"H","impact":"H",
                       "description": story.get("notes") or story["title"]})
     return items
+
+
+def classify_raid(story: dict) -> list[dict]:
+    """
+    Hybrid RAID classifier.
+
+    Primary:  use model-generated raid items when present (schema option 2).
+              These are richer, context-aware, and apply PM expertise at generation time.
+    Fallback: keyword heuristics when model did not produce raid items.
+              Deterministic, always available, catches surface-level signals.
+
+    All returned items are normalised to include a 'label' key for display.
+    """
+    model_raid = story.get("raid")
+
+    if model_raid:
+        # Normalise model items: add display label, ensure required keys present
+        normalised = []
+        for item in model_raid:
+            t = item.get("type", "R")
+            normalised.append({
+                "type":        t,
+                "label":       _RAID_LABELS.get(t, t),
+                "prob":        item.get("prob",   "M"),
+                "impact":      item.get("impact", "M"),
+                "description": item.get("description", ""),
+            })
+        return normalised
+
+    # Fallback: keyword heuristics
+    return _keyword_classify(story)
 
 
 # ── Markdown report ───────────────────────────────────────────────────────────

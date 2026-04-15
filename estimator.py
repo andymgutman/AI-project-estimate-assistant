@@ -21,7 +21,9 @@ logger = logging.getLogger(__name__)
 
 # ── Valid enum values ─────────────────────────────────────────────────────────
 VALID_SIZES = {"S", "M", "L", "XL"}
-VALID_HML   = {"Low", "Medium", "High"}
+VALID_HML        = {"Low", "Medium", "High"}
+VALID_RAID_TYPES = {"R", "A", "I", "D"}
+VALID_RAID_GRADE = {"H", "M", "L"}
 
 # Normalisation maps — catches common model drift before hard rejection
 SIZE_ALIASES: dict[str, str] = {
@@ -103,6 +105,25 @@ def auto_correct(data: dict) -> dict:
         for story in epic["stories"]:
             story["size"]  = normalise_size(story.get("size", "M"))
             story["notes"] = str(story.get("notes") or "")
+            # Normalise model-generated RAID items
+            if not isinstance(story.get("raid"), list):
+                story["raid"] = []
+            cleaned_raid = []
+            for item in story["raid"]:
+                t = str(item.get("type", "")).upper().strip()
+                p = str(item.get("prob", "M")).upper().strip()
+                i = str(item.get("impact", "M")).upper().strip()
+                d = str(item.get("description", "")).strip()
+                if t not in VALID_RAID_TYPES:
+                    logger.warning(f"Skipping RAID item with invalid type '{t}'")
+                    continue
+                if p not in VALID_RAID_GRADE:
+                    p = "M"
+                if i not in VALID_RAID_GRADE:
+                    i = "M"
+                if d:
+                    cleaned_raid.append({"type": t, "prob": p, "impact": i, "description": d})
+            story["raid"] = cleaned_raid
 
     # Timeline
     tl = data.get("timeline", {})
@@ -204,6 +225,11 @@ def validate_estimate(data: dict) -> list[str]:
                 errors.append(
                     f"scope_breakdown[{ei}].stories[{si}]: "
                     f"invalid size '{story.get('size')}' after normalisation"
+                )
+            if not isinstance(story.get("raid"), list):
+                errors.append(
+                    f"scope_breakdown[{ei}].stories[{si}]: "
+                    f"'raid' must be an array, got '{type(story.get('raid')).__name__}'"
                 )
 
     # Timeline
