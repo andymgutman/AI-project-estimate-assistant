@@ -77,6 +77,8 @@ ai-project-estimator/
 └── requirements.txt
 ```
 
+![Call graph](docs/callgraph.svg)
+
 ---
 
 ## Setup
